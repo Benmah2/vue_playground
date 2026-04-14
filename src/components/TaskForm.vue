@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const message = ref("Tasks App")
+const emit = defineEmits<{
+    addTask: [newTask: string]
+}>()
 const newTask = ref("")
+const error = ref("");
 
 function formSubmitted() {
-console.log(newTask.value);
+    if(newTask.value.trim()) {
+        emit("addTask", newTask.value.trim())
+        newTask.value = "";
+    } else {
+       error.value = "Task cannot be empty!"
+
+    }
 }
 
 </script>
@@ -14,11 +23,18 @@ console.log(newTask.value);
     <form @submit.prevent="formSubmitted">
       <label>
         New Task
-        <input v-model="newTask" name="newTask">
+        <input 
+        v-model="newTask" 
+        name="newTask" 
+        :aria-invalid="!!error || undefined"
+        @input="error = ''"
+        >
+        <small v-if="error" id="invalid-helper">
+          {{error}}
+        </small>
       </label>
       <div class="button-container">
         <button>Add</button>
       </div>
-          <h3>{{ newTask }}</h3>
     </form>
 </template>
